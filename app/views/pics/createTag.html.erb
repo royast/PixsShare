@@ -1,0 +1,157 @@
+<script type="text/javascript">
+	var EventUtil = {
+
+		addHandler : function(element, type, handler) {
+			if (element.addEventListener) {
+				element.addEventListener(type, handler, false);
+			} else if (element.attachEvent) {
+				element.attachEvent("on" + type, handler);
+			} else {
+				element["on" + type] = handler;
+			}
+		},
+		removeHandler : function(element, type, handler) {
+			if (element.removeEventListener) {
+				element.removeEventListener(type, handler, false);
+			} else if (element.detachEvent) {
+				element.detachEvent("on" + type, handler);
+			} else {
+				element["on" + type] = null;
+			}
+		},
+
+		getEvent : function(event) {
+			return event ? event : window.event;
+		},
+
+		getTarget : function(event) {
+			return event.target || event.srcElement;
+		},
+
+		preventDefault : function(event) {
+			if (event.preventDefault) {
+				event.preventDefault();
+			} else {
+				event.returnValue = false;
+			}
+		},
+
+		stopPropagation : function(event) {
+			if (event.stopPropagation) {
+				event.stopPropagation();
+			} else {
+				event.cancelBubble = true;
+			}
+		},
+
+		getCharCode : function(event) {
+			if ( typeof event.charCode == "number") {
+				return event.charCode;
+			} else {
+				return event.keyCode;
+			}
+		}
+	}
+
+	function loadXMLDoc(data) {
+		var xmlhttp;
+		if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+			xmlhttp = new XMLHttpRequest();
+		} else {// code for IE6, IE5
+			xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+		}
+		xmlhttp.onreadystatechange = function() {
+
+			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+
+				document.getElementById("tag_menu").innerHTML = xmlhttp.responseText;
+				setSize();
+
+			}
+		}
+		myForm = document.getElementById('my_form_id');
+		var searchtext = myForm.myText.value;
+
+		var url = "/pics/tagcomplete?chars=" + searchtext;
+		xmlhttp.open("post", url, true);
+		xmlhttp.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+		xmlhttp.send();
+		
+	}
+
+	function fillForm(usrId,name) {
+        myForm = document.getElementById('my_form_id');
+		myForm.myText.value= name;
+		myForm.userId.value = usrId;
+	}
+   
+    function deleteTagForm(){
+         
+        tagElement=window.parent.document.getElementById('tag');
+		tagElement.innerHTML = "";
+    }
+    
+    function timeOut(){
+    	setTimeout(deleteTagForm,300);
+    	return true;
+    }
+    
+   	function setSize() {
+		// Set specific variable to represent all iframe tags.
+		var iFrames = window.parent.document.getElementsByTagName('iframe');
+		
+		// Resize heights.
+		function iResize() {
+			// Iterate through all iframes in the page.
+			for (var i = 0, j = iFrames.length; i < j; i++) {
+				// Set inline style to equal the body height of the iframed content.
+				iFrames[i].style.height = iFrames[i].contentWindow.document.body.offsetHeight + 'px';
+			}
+		}
+
+		// Check if browser is Safari or Opera.
+		if ($.browser.safari || $.browser.opera) {
+		    
+			// Start timer
+		 
+		setTimeout(iResize, 0);
+		
+		} else {
+			// For other good browsers.
+			myFrame= window.parent.document.getElementsByTagName('iframe');
+			myFrame[0].style.height = myFrame[0].contentWindow.document.body.offsetHeight + 'px';
+		    //myFrame[0].contentWindow.location.reload(true);	
+			
+		}
+	} 
+</script>
+
+
+
+<div style="background-color:lightblue" class="tag_form_button">
+<%= form_for(:photo, :url => { :action => 'createTagForm' }, :remote => true, :html => { :id => "my_form_id", :onsubmit => "timeOut()" }) do |form| %>
+
+<input type="text" name="myText" placeholder="search users" size="9" onkeyup="loadXMLDoc(event)" autocomplete="off">
+<%= hidden_field_tag(:x, params[:x]) %>
+<%= hidden_field_tag(:y, params[:y]) %>
+<%= hidden_field_tag(:pic, params[:pic]) %>
+<%= hidden_field_tag(:userId) %>
+<input type="submit" value="Tag User" name="commit" >
+<% end %>
+
+
+
+
+
+<%userArr = @userArr%>
+<div id="tag_menu">
+	
+	<% userArr.each do |users| %>
+	<li> 
+	<% fullName = String.new (h(users[:first].to_s) + " "+ h(users[:last].to_s))%>
+<a href="javascript:void(0)" onclick="fillForm(<%=users[:id]%>,'<%=fullName%>')"><%=h users[:first]%> <%=h users[:last]%></a></br>
+</li>
+
+<% end %>
+	
+</div><br/></div>

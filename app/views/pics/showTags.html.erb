@@ -1,0 +1,27 @@
+
+
+<% tagged=Tagger.find_all_by_photo_id(params[:id].to_i)%>
+<%if(tagged.length > 0)%>
+<%tagged.each do |thisTag|%>
+
+
+
+<% thisUser = User.find_by_id(thisTag.user_id)%>
+<% firstName = thisUser.first_name%>
+<% lastName = thisUser.last_name%>
+<% fullName = firstName +' '+ lastName%>
+<% cordX= thisTag.x_cord%>
+<% cordY= thisTag.y_cord%>
+<% left_cord = cordX - 20 %>
+<% top_cord = cordY %>
+
+
+
+<div style="position:absolute; left:<%=left_cord%>px; top:<%=top_cord%>px; ">
+<i style="color:black; font-size:13px; background-color: lightblue">
+<%=fullName%>
+</i>
+</div>
+<%end%>
+
+<%end%>

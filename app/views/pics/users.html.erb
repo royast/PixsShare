@@ -1,0 +1,168 @@
+<div class="right">
+
+</div>
+
+<div class="center">
+	<ul class="navigation-bar">
+		<% homepage = false %>
+		<%if(@loggedUsr != nil)%>
+		<% welcomeStr = @loggedUsr+"'s Page" %>
+		<%if(@sessionId.to_i == params[:id].to_i) then%>
+		<% homepage = true%>
+
+		<li class="current">
+			<a href="#a"><%= welcomeStr%></a>
+		</li>
+		<%end%>
+		<%if(homepage == false) %>
+		<li>
+			<a href="/pics/user/<%= @sessionId%>"><%= welcomeStr%></a>
+		</li>
+		<%end%>
+		<%else%>
+		<li>
+			<a href="/user/index">Sign Up</a>
+		</li>
+		<%end%>
+
+		<li class="current">
+			<a href="/pics/users/">Explore</a>
+		</li>
+
+		<%if(@loggedUsr != nil)%>
+		<li>
+			<a href='/user/logout'>Logout</a>
+		</li>
+		<%else%>
+		<li>
+			<a href='/user/login'>Login</a>
+		</li>
+		<%end%>
+		<li><a href='/user/unregister'>Delete Account</a></li>
+		
+	</ul>
+</div>
+
+<div id="content" style="border-color: -moz-use-text-color black black; border-top: 2px solid black;">
+	<div style="border:solid ; border-width:5px; border-color:darkblue; margin:50px; background-color:#CAE1FF">
+		<h2 class = "center" style="color:darkred; padding:50px"> Click on a User's name to see their photos</h1>
+		<div class = "center">
+			<% userArr = @userArr%>
+			<form>
+				<p>
+					Type in a users name
+				</p>
+				<input type="text" id="myText" autocomplete="off">
+			</form>
+			<script type="text/javascript">
+				var EventUtil = {
+
+					addHandler : function(element, type, handler) {
+						if (element.addEventListener) {
+							element.addEventListener(type, handler, false);
+						} else if (element.attachEvent) {
+							element.attachEvent("on" + type, handler);
+						} else {
+							element["on" + type] = handler;
+						}
+					},
+					removeHandler : function(element, type, handler) {
+						if (element.removeEventListener) {
+							element.removeEventListener(type, handler, false);
+						} else if (element.detachEvent) {
+							element.detachEvent("on" + type, handler);
+						} else {
+							element["on" + type] = null;
+						}
+					},
+
+					getEvent : function(event) {
+						return event ? event : window.event;
+					},
+
+					getTarget : function(event) {
+						return event.target || event.srcElement;
+					},
+
+					preventDefault : function(event) {
+						if (event.preventDefault) {
+							event.preventDefault();
+						} else {
+							event.returnValue = false;
+						}
+					},
+
+					stopPropagation : function(event) {
+						if (event.stopPropagation) {
+							event.stopPropagation();
+						} else {
+							event.cancelBubble = true;
+						}
+					},
+
+					getCharCode : function(event) {
+						if ( typeof event.charCode == "number") {
+							return event.charCode;
+						} else {
+							return event.keyCode;
+						}
+					}
+				}
+
+				function loadXMLDoc(data) {
+					var xmlhttp;
+					if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+						xmlhttp = new XMLHttpRequest();
+					} else {// code for IE6, IE5
+						xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+					}
+					xmlhttp.onreadystatechange = function() {
+
+						if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+
+							document.getElementById("center_menu").innerHTML = xmlhttp.responseText;
+
+						}
+					}
+					var searchtext = document.getElementById("myText").value;
+
+					var url = "../autocomplete?chars=" + searchtext;
+					xmlhttp.open("post", url, true);
+					xmlhttp.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+					xmlhttp.send();
+				}
+
+				var textbox = document.getElementById("myText");
+				EventUtil.addHandler(textbox, "keyup", function(event) {
+
+					loadXMLDoc(event);
+				});
+
+				textbox.focus();
+				
+			</script>
+
+
+	
+<ul id="center_menu">
+	
+	
+<% userArr.each do |users| %>
+
+<li>
+	<p style="white-space: nowrap;">
+<a style="color:navy;" href="/pics/user/<%=users[:id]%>"><%=h users[:first]%> <%=h users[:last]%></a> 
+   </p>
+</li>
+
+
+<% end %>
+</ul>
+</div>
+</div>
+</div>
+<div id="footer">
+  <p>Designed and implemented by <a href="/"><strong>Roya Sadeghi</strong></a>. Copyright ©<a href="/"><strong>Roya Sadeghi</strong></a>. All rights reserved.<br/>	
+  Please contact me on my <a href="http://www.linkedin.com/pub/roya-sadeghi/7/417/849/"><strong>linkedin</strong></a> page for comments and questions.</p>
+  
+</div>

@@ -1,0 +1,16 @@
+<b style="color:navy">Follow list:</b>
+<ul id="fav">
+<%friends = Friend.find_all_by_user_id(params[:id])%>
+<%if(friends.length > 0)%>
+<%friends.each do |friend|%>
+<% thisUser = User.find_by_id(friend.fav_id)%>
+<% firstName = thisUser.first_name%>
+<% lastName = thisUser.last_name%>
+<% fullName = firstName +' '+ lastName%>
+<li><a href="/pics/user/<%=thisUser.id%>" target="_top"><%=fullName%></a></li></br>
+<%end%>
+<%end%>
+</ul>
+
+
+

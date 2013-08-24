@@ -1,0 +1,9 @@
+<div class="right"> 
+<%if(@loggedUsr != nil)%>
+<% welcomeStr = "Welcome " + @loggedUsr %>
+<%=welcomeStr%>  	
+<a href='/user/logout'>Logout</a>
+<%else%>
+<a href='/user/login'>Login</a>
+<%end%>
+</div>

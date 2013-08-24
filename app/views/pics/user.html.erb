@@ -1,0 +1,464 @@
+<script type="text/javascript">
+	function AddTag(item) {
+
+		hideTag(item.id);
+		item.value = "Done tagging";
+		//item.style.fontSize = "9px";
+
+		var picName = "pic" + item.id;
+		var thisPic = document.getElementById(picName);
+		item.onclick = function() {
+			endTag(item.id);
+		}
+		thisPic.onclick = function(event) {
+			tag(item.id, event);
+		}
+		thisPic.style.position = "relative";
+		thisPic.className = "imag";
+	}
+
+	function tag(picId, event) {
+
+		var pageX = event.pageX, pageY = event.pageY;
+		event=fixEvent(event);
+        var top = event.offsetY, left = event.offsetX;
+ 
+
+		if (pageX === undefined) {
+			pageX = event.clientX + (document.body.scrollLeft || document.documentElement.scrollLeft);
+		}
+
+		if (pageY === undefined) {
+			pageY = event.clientY + (document.body.scrollTop || document.documentElement.scrollTop);
+		}
+
+		var tagElement = document.getElementById("tag");
+		tagElement.style.position = "absolute";
+		tagElement.style.left = pageX - 50 + "px";
+		tagElement.style.top = pageY - 50 + "px";
+
+		tagForm = "<iframe allowtransparency='true' style='background-color: transparent;' src='../createTag?x=" + left + "&y=" + top + "&pic=" + picId + "' frameborder='0'  width='180px' scrolling='no'></iframe> ";
+
+		tagElement.innerHTML = tagForm;
+		setSize();
+
+	}
+
+	function endTag(picId) {
+
+		var tagButton = document.getElementById(picId);
+		//tagButton.value = "Tag Photo";
+
+		tagButton.onclick = function() {
+			AddTag(tagButton);
+		}
+		var tagElement = document.getElementById("tag");
+		tagElement.innerHTML = "";
+		tagElement.style.position = "relative";
+
+		var picName = "pic" + picId;
+		var thisPic = document.getElementById(picName);
+		thisPic.onclick = function() {
+		}
+		thisPic.className = "imag2";
+		scrollTo(picName);
+		window.location.reload(true); 
+	  
+	   
+
+	}
+
+	function tagUsr(myForm) {
+		var thisSelected = myForm.mySelect.options[myForm.mySelect.selectedIndex].value;
+		var tagElement = document.getElementById("tag");
+		var pageX = tagElement.style.left;
+		var pageY = tagElement.style.top;
+
+	}
+
+	function ShowTag(item) {
+
+		item.value = "Hide Tags";
+
+		var picName = "pic" + item.id;
+		var thisPic = document.getElementById(picName);
+		item.onclick = function() {
+			hideTag(item.id);
+		}
+		pos = Array();
+
+		pos = position(thisPic);
+
+		var pageX = pos[0];
+		var pageY = pos[1];
+
+		var tagElement = document.getElementById("showTag");
+		//parent = tagElement.parentNode;
+		//parent.style.position = "";
+		tagElement.style.position = "absolute";
+		tagElement.style.left = pageX - 15 + "px";
+		tagElement.style.top = pageY - 15 + "px";
+
+		tagForm = "<iframe allowtransparency='true' style='background-color: transparent;' frameborder='0' src='../showTags/" + item.id + "?heightY=" + (pageY) + "&widthX=" + (pageX) + "' height='" + (thisPic.height + 45) + "px'  width='" + (thisPic.width + 70) + "px' scrolling='no' seamless></iframe> ";
+
+		tagElement.innerHTML = tagForm;
+		
+		//setSize();
+
+	}
+
+	function hideTag(picId) {
+
+		var tagButton = document.getElementById(picId);
+		tagButton.value = "Show Tags";
+
+		tagButton.onclick = function() {
+			ShowTag(tagButton);
+		}
+		var tagElement = document.getElementById("showTag");
+		tagElement.innerHTML = "";
+		tagElement.style.position = "relative";
+
+		var picName = "pic" + picId;
+		var thisPic = document.getElementById(picName);
+		thisPic.onclick = function() {
+		}
+		thisPic.className = "imag2";
+
+	}
+
+	function position(elem) {
+		var left = 0, top = 0;
+
+		do {
+			left += elem.offsetLeft;
+			top += elem.offsetTop;
+		} while ( elem = elem.offsetParent );
+
+		return [left, top];
+	}
+
+	function autoResize(id) {
+		var newheight;
+		var newwidth;
+
+		if (document.getElementById) {
+			newheight = document.getElementById(id).contentWindow.document.body.scrollHeight;
+			newwidth = document.getElementById(id).contentWindow.document.body.scrollWidth;
+		}
+
+		document.getElementById(id).height = (newheight) + "px";
+		document.getElementById(id).width = (newwidth) + "px";
+	}
+   
+
+	function setSize() {
+		// Set specific variable to represent all iframe tags.
+		var iFrames = document.getElementsByTagName('iframe');
+		
+		// Resize heights.
+		function iResize() {
+			// Iterate through all iframes in the page.
+			for (var i = 0, j = iFrames.length; i < j; i++) {
+				// Set inline style to equal the body height of the iframed content.
+				iFrames[i].style.height = iFrames[i].contentWindow.document.body.offsetHeight + 'px';
+			}
+		}
+
+		// Check if browser is Safari or Opera.
+		if ($.browser.safari || $.browser.opera) {
+		    
+			// Start timer when loaded.
+			$('iframe').load(function() {
+				setTimeout(iResize, 0);
+			});
+			// Safari and Opera need a kick-start.
+			for (var i = 0, j = iFrames.length; i < j; i++) {
+				var iSource = iFrames[i].src;
+				iFrames[i].src = '';
+				iFrames[i].src = iSource;
+			}
+		} else {
+			// For other good browsers.
+			$('iframe').load(function() {
+				// Set inline style to equal the body height of the iframed content.
+				this.style.height = this.contentWindow.document.body.offsetHeight + 'px';
+				
+			});
+		}
+	}
+	
+function fixEvent(e) {
+    if (! e.hasOwnProperty('offsetX')) {
+        var curleft = curtop = 0;
+        if (e.offsetParent) {
+           var obj=e;
+           do {
+              curleft += obj.offsetLeft;
+              curtop += obj.offsetTop;
+           } while (obj = obj.offsetParent);
+        }
+        e.offsetX=e.layerX-curleft;
+        e.offsetY=e.layerY-curtop;
+    }
+    return e;
+}
+
+function scrollTo(hash) {
+    location.hash = "#" + hash;
+}
+</script>
+
+<%if params[:anchor].to_i > 0 %>
+ <script type="text/javascript"> scrollTo(params[:anchor])</script>
+ <%end%>
+
+<div class="center">
+<ul class="navigation-bar">
+	<%homepage = false %>
+	<%if(@loggedUsr != nil)%>
+<% welcomeStr = @loggedUsr+"'s Page" %>
+ <%if(@sessionId.to_i == params[:id].to_i) then%>
+<%homepage = true%>
+  	
+<li class="current"><a href="/pics/user/<%=@sessionId%>"><%=welcomeStr%></a></li>
+<%end%>
+<%if(homepage == false) %>
+<li><a href="/pics/user/<%=@sessionId%>"><%=welcomeStr%></a></li>
+<%end%>
+<%end%>
+<%if(@loggedUsr == nil)%>
+<li><a href="/user/index/">Sign Up</a></li>
+<%end%>
+
+
+<%if(homepage == false) %>
+<li class="current"><a href="/pics/users/">Explore</a></li>
+<%else%>
+  <li><a href="/pics/users/">Explore</a></li>
+  <%end%>
+   <%if(@loggedUsr != nil)%> 	
+<li><a href='/user/logout'>Logout</a></li>
+<%else%>
+<li><a href='/user/login'>Login</a></li>
+<%end%>
+<li><a href='/user/unregister'>Delete Account</a></li>
+</ul>
+</div>
+
+
+
+
+<%if(homepage == true) %>
+<table class="Table2CSS"><tr style="background-color:white; margin-right:100px;">	
+<td><div class="favs">
+<iframe style="background-color: transparent;" allowtransparency="true" frameborder='0' src='../showFavs/<%=params[:id]%>' height='100px'  width='200px'  seamless></iframe>
+</div>	
+</td><td></td><td></td><td></td><td>
+<%end%>	
+    
+
+  
+	<h2 class="center" style="color: navy"> <%=h @user%>'s Pictures </h2> 
+   
+    <%if(params[:errors] != nil)%>
+    <div style="color:red"> <i> 	
+    <% params[:errors].each do |msg| %>
+  <h4 class="center"><%=msg %></h4>
+    <% end %>
+    <%end%> </div></i>
+  <%if(homepage == false) %>
+  
+   <div class="center">
+  <div class="comment_button">	
+  	
+  <%friends = Friend.find(:all, :conditions =>{ :user_id => session[:user_id] , :fav_id => params[:id]})%>	
+  
+  <%if(friends.length == 0 || @loggedUsr == nil) %>
+  <%=form_for(:friend, :url => {:action => :add_favs, :id=>params[:id]}) do |form| %>
+ <%= form.button "Follow" %>
+
+   <%end%>
+   <%else%>
+   <%=form_for(:friend, :url => {:action => :delete_favs, :id=>params[:id]}) do |form| %>
+   <%= form.button "UnFollow" %>  
+   <% end %>
+
+  <%end%>  
+  <%end%>	
+  </div>
+    </div>
+	
+</td><td></td><td>
+
+</td></tr></table>
+
+	
+
+
+<div id="navigation">
+<%if(params[:taggedIn].nil?)%>
+
+<ul id="tabmenu">
+    <li><a id="tab1" class="active" href="/pics/user/<%=params[:id]%>">Pictures Uploaded by <%=@user%></a></li>
+    <li><a id="tab2" href="/pics/user/<%=params[:id]%>?taggedIn=true">Pictures <%=@user%> Is Tagged In</a></li>
+
+</ul>
+<%else%>
+
+<ul id="tabmenu">
+    <li><a id="tab1" href="/pics/user/<%=params[:id]%>">Pictures Uploaded by <%=@user%></a></li>
+    <li><a id="tab2" class="active" href="/pics/user/<%=params[:id]%>?taggedIn=true">Pictures <%=@user%> Is Tagged In</a></li>
+
+</ul>
+
+
+<%end%>
+</div>
+<div id="content">
+
+<%if(homepage == true) %>	
+<div class="upload">
+ <b>Upload a photo</b>
+ 
+<%=form_for(:photo, :url => {:action => :post_photo}, :html => {:multipart => true})  do |form| %>
+  <%=form.file_field :image %> </br>
+  <div class="browse_button">
+  <%= form.submit "Upload Photo" %>
+<% end %>
+</div>
+</div>
+<%end%>
+
+<%if(params[:taggedIn] != nil)%>
+ <%myPics = @picsArrTagged %>
+ <%else%>
+<% myPics = @picsArr%> 
+<%end%>
+
+
+
+<%if(myPics.length> 0)%>
+<% myPics.each do |pics| %>
+
+
+<div class ="center" >
+<table cellspacing="0" class="TableCSS"> 
+		
+<tr ><td></td><td class="cent">		
+
+
+<img id="pic<%=pics[:id]%>" src="/images/<%=pics[:file]%>" style="width: 500px;" border="5" />
+</td>
+	
+
+<td><div class="tag_button" style="border-width:2px; border-color:black; border-style: solid; padding:4px;">
+
+
+<%if ((homepage == true) && (pics[:usr_id].to_i == @sessionId.to_i))%>
+<%=form_for(:photo, :url => {:action => :delete_photo, :id=>pics[:id]})  do |form| %>
+  <%= form.submit "Delete Photo" %>
+<% end %>
+<%end%>	
+
+
+<form name="showTag" >
+	<input type="button" class="tag_button" name="mybutton" value="Show Tags" onclick="ShowTag(this)" id="<%=pics[:id]%>" >
+</form>
+
+
+<form name="tagForm" >
+    
+	<input type="button" name="mybutton" class="tag_button" value="Tag Photo" onclick="AddTag(this)" id="<%=pics[:id]%>" >
+</form>
+</div>
+	</td></tr>
+   <tr style="background-color:#F0FFFF"> <td></td><td class="cent">
+   	<%if (params[:taggedIn] != nil )%> 
+   	<% thisUser = User.find_by_id(pics[:usr_id])%>
+    <% firstName = thisUser.first_name%>
+    <% lastName = thisUser.last_name%>
+    <% fullName = firstName +' '+ lastName%>
+   <i style="color:grey;font-size:13px;background-color:#CAE1FF"> Uploaded on <%=pics[:time].getlocal%> by <%=fullName%> </i> </br></td><td></td></tr>
+   <%else%>
+   <i style="color:grey;font-size:13px;background-color:#CAE1FF"> Uploaded on <%=pics[:time].getlocal%> </i> </br></td><td></td></tr>
+   <%end%>
+    <div class = "center">
+<tr> <td></td><td class="cent"> 
+	 <%tagged=Tagger.find_all_by_photo_id(pics[:id].to_i)%>
+	 <%if(tagged.length > 0)%>  
+	<i style="color:grey; font-size:16px">Tagged in this photo:</i>
+	<%tagged.each do |thisTag|%>
+	
+        <%thisUser = User.find_by_id(thisTag.user_id)%>
+        <%firstName = thisUser.first_name%>
+        <%lastName = thisUser.last_name%>
+        <%fullName = firstName +' '+ lastName%>
+        '<a href='/pics/user/<%=thisTag.user_id%>'><%=fullName%></a><%if((thisUser.id.to_i == @sessionId.to_i) || (@sessionId.to_i == params[:id].to_i))%> <i style="color:grey; font-size:10px">(<%=link_to "Remove Tag", { :action => "removeTag", :id => thisUser.id, :pageId=>params[:id], :picId =>pics[:id] }%>)</i> <%end%>'
+        <%end%> 
+ 
+        
+       <%end%>
+
+	</div> </td><td></td></tr>
+	
+	<div class = "center">
+<tr> <td></td><td class="cent"> <%= form_for(:comment, :url => {:action => :post_comment, :id =>pics[:id]}) do |form| %>
+	<%=form.hidden_field(:pageId, :value => params[:id].to_s) %>
+	<%if params[:taggedIn] == "true"%>
+    <%=form.hidden_field(:taggedIn, :value => params[:taggedIn]) %>
+    <%end%>
+    <%=form.text_area :comment , :size => "40x5" %>
+   </div> </td><td></td></tr>
+  <tr > <td></td><td class="cent"> <div class="comment_button">
+   <%= form.button "Comment" %>
+   <% end %>
+  </div> </td><td></td></tr>
+    
+	<% pics[:comment].each do |comment| %>
+	
+	<tr > <td></td><td class="cent">	
+	<p class="comment">	
+	<a style = "text-decoration:none;" href="/pics/user/<%=comment[:id]%>"><%=comment[:comFirst]%> <%=comment[:comLast]%></a> <i style="color:grey; font-size:10px;">on <%=comment[:time].getlocal%></i> : 
+	<%=h comment[:comment] %> <%if((comment[:id].to_i == @sessionId.to_i) || (@sessionId.to_i == params[:id].to_i))%> <i style="color:grey; font-size:10px">(<%=link_to "Remove Comment", { :action => "remove_comment", :id =>comment[:commId],:pageId=>params[:id], :taggedIn=>params[:taggedIn]}%>)</i> <%end%> </td><td></td></tr>
+	</p>
+	<%end%>
+	</table>
+	
+	</div>
+
+
+
+
+<%end%>
+<%end%>
+
+
+<%if(myPics.length == 0)%>
+<div class="center">
+<%if(params[:taggedIn] != nil)%>
+
+<br/><br/>
+<p style="color:navy; font-size:14px;"><strong><i>SORRY!!!</i> <%=@user%> is not tagged in any photos! </strong></p>
+<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+<%end%>
+<%if(params[:taggedIn] == nil)%>
+<br/><br/>
+<p style="color:navy; font-size:14px;"><strong><i>SORRY!!!</i> <%=@user%> has not uploaded any pictures! </strong></p>
+
+<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+<%end%>
+<%end%>
+</div>
+
+</div>
+
+
+<div id="showTag" style="position: relative"></div>
+
+<div id="tag"></div>
+<div id="footer">
+  <p>Designed and implemented by <a href="/"><strong>Roya Sadeghi</strong></a>. Copyright ©<a href="/"><strong>Roya Sadeghi</strong></a>. All rights reserved.<br/>	
+  Please contact me on my <a href="http://www.linkedin.com/pub/roya-sadeghi/7/417/849/"><strong>linkedin</strong></a> page for comments and questions.</p>
+  
+</div>

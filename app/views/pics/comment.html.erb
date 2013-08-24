@@ -1,0 +1,15 @@
+<div class="right"> 
+<%if(@loggedUsr != nil)%>
+<% welcomeStr = "Welcome " + @loggedUsr %>
+<%=welcomeStr%>  	
+<a href='/user/logout'>Logout</a>
+<%else%>
+<a href='/user/login'>Login</a>
+<%end%>
+</div>
+
+<%= form_for(@comment, :url => {:action => :post_comment, :id =>params[:id]}) do |form| %>
+  <%=form.text_area :comment, :size => "60x12" %>
+  <%= form.submit "submit" %>
+<% end %>
+

@@ -1,0 +1,43 @@
+<div class="center">
+<ul class="navigation-bar">
+	<%homepage = false %>
+	<%if(@loggedUsr != nil)%>
+<% welcomeStr = @loggedUsr+"'s Page" %>
+ <%if(@sessionId.to_i == params[:id].to_i) then%>
+<%homepage = true%>
+  	
+<li><a href="#a"><%=welcomeStr%></a></li>
+<%end%>
+<%if(homepage == false) %>
+<li><a href="/pics/user/<%=@sessionId%>"><%=welcomeStr%></a></li>
+<%end%>
+<%else%>
+<li class="current"><a href="/user/index">Sign Up</a></li>
+<%end%>
+
+<li><a href="/pics/users/">Explore</a></li>
+  
+   <%if(@loggedUsr != nil)%> 	
+<li><a href='/user/logout'>Logout</a></li>
+<%else%>
+<li><a href='/user/login'>Login</a></li>
+<%end%>
+<li><a href='/user/unregister'>Delete Account</a></li>
+</ul>
+</div>
+ 
+<div id="content2">
+<div class="center"> 
+	 <p ><b style="color:darkred; width: 22px;"> Welcome To PixsShare Where You Can </b></p>
+ 	 <p > <i style="color:darkred; width: 18px;"> Share Photos with your friends... <br> Leave comments on your friends photos... <br> Tag your friends in your photos...<br> ENJOY!! </i></p>
+	
+<img id="register" class= "imag3" src="/images/register.jpg" onclick="javascript:window.location.href='/user/register/'">
+</div>
+<h3 class="center"> Or, you can <a href='/user/login'>Login</a> with ID:<i style="color:navy;">PixsShare</i> and password:<i style="color:navy;">PixsShare</i> for a Demo.</h4>
+</div>
+
+<div id="footer">
+  <p>Designed and implemented by <a href="/"><strong>Roya Sadeghi</strong></a>. Copyright ©<a href="/"><strong>Roya Sadeghi</strong></a>. All rights reserved.<br/>	
+  Please contact me on my <a href="http://www.linkedin.com/pub/roya-sadeghi/7/417/849/"><strong>linkedin</strong></a> page for comments and questions.</p>
+  
+</div>
